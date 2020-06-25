@@ -3,4 +3,9 @@ Answering "What is the faster way to return a single scalar from a kernel to hos
 
 # Result
 
+- CUDA Version: 10.2
+- GPU: Quadro GV100
+- Driver: 440.64
+- CPU: Intel(R) Core(TM) i9-7900X CPU @ 3.30GHz
+
 ![image](result.png)
