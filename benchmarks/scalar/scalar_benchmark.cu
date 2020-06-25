@@ -1,7 +1,7 @@
 
 #include <benchmark/benchmark.h>
+#include <cub/cub.cuh>
 #include <iostream>
-#include <cub/cub.cuh> 
 #include <thrust/iterator/iterator_traits.h>
 
 template <std::size_t block_size, typename T>
@@ -28,7 +28,7 @@ __global__ void simple_reduction(std::size_t input_size, T *global_result) {
 
 template <typename T> static void BM_device_memory(::benchmark::State &state) {
 
-  auto size = 1'000'000;
+  auto size = state.range(0);
 
   T *d_result{};
 
@@ -45,5 +45,6 @@ template <typename T> static void BM_device_memory(::benchmark::State &state) {
   }
 }
 BENCHMARK_TEMPLATE(BM_device_memory, int)
-    ->RangeMultiplier(2)
-    ->Range(1 << 10, 1 << 18);
+    ->RangeMultiplier(10)
+    ->Range(1'000'000, 1'000'000'000)
+    ->Unit(benchmark::kMillisecond);
