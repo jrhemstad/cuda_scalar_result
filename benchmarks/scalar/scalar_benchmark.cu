@@ -42,7 +42,7 @@ template <typename T> static void BM_device_memory(::benchmark::State &state) {
 }
 BENCHMARK_TEMPLATE(BM_device_memory, int)
     ->RangeMultiplier(10)
-    ->Range(1'000'000, 1'000'000'000)
+    ->Range(100'000, 1'000'000'000)
     ->Unit(benchmark::kMillisecond);
 
 template <typename T> static void BM_managed_memory(::benchmark::State &state) {
@@ -62,5 +62,5 @@ template <typename T> static void BM_managed_memory(::benchmark::State &state) {
 }
 BENCHMARK_TEMPLATE(BM_managed_memory, int)
     ->RangeMultiplier(10)
-    ->Range(1'000'000, 1'000'000'000)
+    ->Range(100'000, 1'000'000'000)
     ->Unit(benchmark::kMillisecond);
