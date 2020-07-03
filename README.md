@@ -1,5 +1,5 @@
 # cuda_scalar_result
-Answering "What is the faster way to return a single scalar from a kernel to host?" 
+Answering "What is the fastest way to return a single scalar from a kernel to host?" 
 
 # Result
 
