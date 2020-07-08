@@ -48,7 +48,7 @@ __global__ void std_reduction(
   bool is_last_block_done = false;
   if (threadIdx.x == 0) {
     device_result->fetch_add(block_result, cuda::std::memory_order_relaxed);
-    unsigned value = atomic_count->fetch_add(1, cuda::memory_order_relaxed);
+    unsigned value = atomic_count->fetch_add(1, cuda::memory_order_release);
     is_last_block_done = value == (gridDim.x - 1);
   }
   if (is_last_block_done) {
