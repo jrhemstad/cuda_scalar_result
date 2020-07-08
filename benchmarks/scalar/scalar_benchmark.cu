@@ -99,14 +99,13 @@ static void BM_std_pinned_memory(::benchmark::State &state) {
       ;
     benchmark::DoNotOptimize(h_result = *hd_result);
   }
-  // std::cout << h_result << std::endl;
   cudaFreeHost(hd_result);
   cudaFree(d_result);
   cudaFree(atomic_count);
 }
 BENCHMARK_TEMPLATE(BM_std_pinned_memory, int)
     ->Apply(generate_size)
-    ->Unit(benchmark::kMillisecond);
+    ->Unit(benchmark::kMicrosecond);
 
 template <typename T> static void BM_device_memory(::benchmark::State &state) {
   auto size = state.range(0);
@@ -125,7 +124,7 @@ template <typename T> static void BM_device_memory(::benchmark::State &state) {
 }
 BENCHMARK_TEMPLATE(BM_device_memory, int)
     ->Apply(generate_size)
-    ->Unit(benchmark::kMillisecond);
+    ->Unit(benchmark::kMicrosecond);
 
 template <typename T> static void BM_managed_memory(::benchmark::State &state) {
   auto size = state.range(0);
@@ -145,7 +144,7 @@ template <typename T> static void BM_managed_memory(::benchmark::State &state) {
 }
 BENCHMARK_TEMPLATE(BM_managed_memory, int)
     ->Apply(generate_size)
-    ->Unit(benchmark::kMillisecond);
+    ->Unit(benchmark::kMicrosecond);
 
 template <typename T>
 static void BM_managed_memory_prefetch(::benchmark::State &state) {
@@ -167,7 +166,7 @@ static void BM_managed_memory_prefetch(::benchmark::State &state) {
 }
 BENCHMARK_TEMPLATE(BM_managed_memory_prefetch, int)
     ->Apply(generate_size)
-    ->Unit(benchmark::kMillisecond);
+    ->Unit(benchmark::kMicrosecond);
 
 template <typename T> static void BM_pinned_memory(::benchmark::State &state) {
   auto size = state.range(0);
@@ -186,4 +185,4 @@ template <typename T> static void BM_pinned_memory(::benchmark::State &state) {
 }
 BENCHMARK_TEMPLATE(BM_pinned_memory, int)
     ->Apply(generate_size)
-    ->Unit(benchmark::kMillisecond);
+    ->Unit(benchmark::kMicrosecond);
