@@ -64,6 +64,15 @@ __global__ void std_reduction(
   }
 }
 
+static void generate_size(benchmark::internal::Benchmark *b) {
+  constexpr auto multiplier{10};
+  constexpr auto min{10'000};
+  constexpr auto max{100'000'000};
+  for (auto size = min; size <= max; size *= multiplier) {
+    b->Args({size});
+  }
+}
+
 template <typename T>
 static void BM_std_pinned_memory(::benchmark::State &state) {
 
@@ -96,8 +105,7 @@ static void BM_std_pinned_memory(::benchmark::State &state) {
   cudaFree(atomic_count);
 }
 BENCHMARK_TEMPLATE(BM_std_pinned_memory, int)
-    ->RangeMultiplier(10)
-    ->Range(100'000, 1'000'000'000)
+    ->Apply(generate_size)
     ->Unit(benchmark::kMillisecond);
 
 template <typename T> static void BM_device_memory(::benchmark::State &state) {
@@ -116,8 +124,7 @@ template <typename T> static void BM_device_memory(::benchmark::State &state) {
   cudaFree(d_result);
 }
 BENCHMARK_TEMPLATE(BM_device_memory, int)
-    ->RangeMultiplier(10)
-    ->Range(100'000, 1'000'000'000)
+    ->Apply(generate_size)
     ->Unit(benchmark::kMillisecond);
 
 template <typename T> static void BM_managed_memory(::benchmark::State &state) {
@@ -137,8 +144,7 @@ template <typename T> static void BM_managed_memory(::benchmark::State &state) {
   cudaFree(d_result);
 }
 BENCHMARK_TEMPLATE(BM_managed_memory, int)
-    ->RangeMultiplier(10)
-    ->Range(100'000, 1'000'000'000)
+    ->Apply(generate_size)
     ->Unit(benchmark::kMillisecond);
 
 template <typename T>
@@ -160,8 +166,7 @@ static void BM_managed_memory_prefetch(::benchmark::State &state) {
   cudaFree(d_result);
 }
 BENCHMARK_TEMPLATE(BM_managed_memory_prefetch, int)
-    ->RangeMultiplier(10)
-    ->Range(100'000, 1'000'000'000)
+    ->Apply(generate_size)
     ->Unit(benchmark::kMillisecond);
 
 template <typename T> static void BM_pinned_memory(::benchmark::State &state) {
@@ -180,6 +185,5 @@ template <typename T> static void BM_pinned_memory(::benchmark::State &state) {
   cudaFreeHost(d_result);
 }
 BENCHMARK_TEMPLATE(BM_pinned_memory, int)
-    ->RangeMultiplier(10)
-    ->Range(100'000, 1'000'000'000)
+    ->Apply(generate_size)
     ->Unit(benchmark::kMillisecond);
