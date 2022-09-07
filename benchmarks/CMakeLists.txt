@@ -60,4 +60,6 @@ set(SCALAR_BENCH_SRC
 
 ConfigureBench(SCALAR_BENCH "${SCALAR_BENCH_SRC}")
 
+ConfigureBench(DEVICE_MEMORY "${CMAKE_CURRENT_SOURCE_DIR}/scalar/device_memory.cu")
+
 ###################################################################################################

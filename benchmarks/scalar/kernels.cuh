@@ -1,6 +1,17 @@
 
 #include <cub/cub.cuh>
 
+#include <benchmark/benchmark.h>
+
+inline void generate_size(benchmark::internal::Benchmark *b) {
+  constexpr auto multiplier{10};
+  constexpr auto min{10'000};
+  constexpr auto max{100'000'000};
+  for (auto size = min; size <= max; size *= multiplier) {
+    b->Args({size});
+  }
+}
+
 template <std::size_t block_size, typename T>
 __global__ void simple_reduction(std::size_t input_size, T *global_result) {
 
