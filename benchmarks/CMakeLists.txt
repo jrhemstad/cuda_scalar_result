@@ -1,16 +1,18 @@
-﻿cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+﻿cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 project(EXAMPLE LANGUAGES C CXX CUDA)
 
 ###################################################################################################
 # - compiler options ------------------------------------------------------------------------------
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_COMPILER $ENV{tCC})
 set(CMAKE_CXX_COMPILER $ENV{CXX})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CUDA_STANDARD 14)
+set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+CPMAddPackage("gh:NVIDIA/libcudacxx#d4bd0f6de28b265f7428e39340cbe28c1b560da6")
 
 ###################################################################################################
 # - compiler function -----------------------------------------------------------------------------
@@ -18,17 +20,17 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 function(ConfigureBench CMAKE_BENCH_NAME CMAKE_BENCH_SRC)
     add_executable(${CMAKE_BENCH_NAME}
                    ${CMAKE_BENCH_SRC})
-    set_target_properties(${CMAKE_BENCH_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    target_link_libraries(${CMAKE_BENCH_NAME} benchmark benchmark_main pthread)
+    #set_target_properties(${CMAKE_BENCH_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    target_link_libraries(${CMAKE_BENCH_NAME} libcudacxx::libcudacxx benchmark benchmark_main pthread )
     set_target_properties(${CMAKE_BENCH_NAME} PROPERTIES
                             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/gbenchmarks")
+    target_compile_features(${CMAKE_BENCH_NAME} PRIVATE cxx_std_17 cuda_std_17)
 endfunction(ConfigureBench)
 
 ###################################################################################################
 # - include paths ---------------------------------------------------------------------------------
 
-include_directories("${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}"
-                    "${CMAKE_SOURCE_DIR}"
+include_directories("${CMAKE_SOURCE_DIR}"
                     "${CMAKE_SOURCE_DIR}/cub"
                     "${GBENCH_INCLUDE_DIR}"
                     "${CMAKE_CURRENT_SOURCE_DIR}")

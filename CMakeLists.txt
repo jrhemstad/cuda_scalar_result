@@ -13,11 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #=============================================================================
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 project(EXAMPLE VERSION 0.1.0 LANGUAGES C CXX CUDA)
 
 find_package(CUDA REQUIRED)
+
+include(cmake/CPM.cmake)
 
 ###################################################################################################
 # - build type ------------------------------------------------------------------------------------
@@ -37,7 +39,7 @@ endif()
 ###################################################################################################
 # - compiler options ------------------------------------------------------------------------------
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_COMPILER $ENV{CC})
 set(CMAKE_CXX_COMPILER $ENV{CXX})
