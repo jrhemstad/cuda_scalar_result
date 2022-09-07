@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+﻿cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(EXAMPLE LANGUAGES C CXX CUDA)
 
@@ -62,6 +62,8 @@ ConfigureBench(MANAGED_MEMORY "${CMAKE_CURRENT_SOURCE_DIR}/scalar/managed_memory
 ConfigureBench(MANAGED_MEMORY_PREFETCH "${CMAKE_CURRENT_SOURCE_DIR}/scalar/managed_memory_prefetch.cu")
 
 ConfigureBench(PINNED_MEMORY "${CMAKE_CURRENT_SOURCE_DIR}/scalar/pinned_memory.cu")
+
+ConfigureBench(CLEVER_PINNED "${CMAKE_CURRENT_SOURCE_DIR}/scalar/clever_pinned.cu")
 
 ConfigureBench(ATOMIC_PINNED "${CMAKE_CURRENT_SOURCE_DIR}/scalar/atomic_pinned.cu")
 
