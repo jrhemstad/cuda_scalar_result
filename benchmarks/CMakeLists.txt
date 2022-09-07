@@ -55,11 +55,14 @@ ConfigureBench(EXAMPLE_BENCH "${EXAMPLE_BENCH_SRC}")
 
 # - example benchmark --------------------------------------------------------------------------------
 
-set(SCALAR_BENCH_SRC
-  "${CMAKE_CURRENT_SOURCE_DIR}/scalar/scalar_benchmark.cu")
-
-ConfigureBench(SCALAR_BENCH "${SCALAR_BENCH_SRC}")
-
 ConfigureBench(DEVICE_MEMORY "${CMAKE_CURRENT_SOURCE_DIR}/scalar/device_memory.cu")
+
+ConfigureBench(MANAGED_MEMORY "${CMAKE_CURRENT_SOURCE_DIR}/scalar/managed_memory.cu")
+
+ConfigureBench(MANAGED_MEMORY_PREFETCH "${CMAKE_CURRENT_SOURCE_DIR}/scalar/managed_memory_prefetch.cu")
+
+ConfigureBench(PINNED_MEMORY "${CMAKE_CURRENT_SOURCE_DIR}/scalar/pinned_memory.cu")
+
+ConfigureBench(ATOMIC_PINNED "${CMAKE_CURRENT_SOURCE_DIR}/scalar/atomics.cu")
 
 ###################################################################################################
