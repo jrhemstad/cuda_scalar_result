@@ -4,9 +4,7 @@
 
 #include <benchmark/benchmark.h>
 #include <cuda/std/atomic>
-#include <iostream>
 #include <new>
-#include <thrust/iterator/iterator_traits.h>
 
 template <typename T> __global__ void zero(T *count) { new (count) T{0}; }
 
@@ -34,12 +32,9 @@ __global__ void std_reduction(
   if (is_last_block_done) {
     // copy result to global buffer
     if (threadIdx.x == 0) {
-      global_result->store(device_result->load(cuda::std::memory_order_relaxed),
-                           cuda::std::memory_order_relaxed);
-      device_result->store(
-          0, cuda::std::memory_order_relaxed); // set to zero for next time
-      atomic_count->store(
-          0, cuda::std::memory_order_relaxed); // set to zero for next time
+      global_result->store(device_result->load(cuda::std::memory_order_relaxed), cuda::std::memory_order_relaxed);
+      device_result->store(0, cuda::std::memory_order_relaxed); // set to zero for next time
+      atomic_count->store(0, cuda::std::memory_order_relaxed); // set to zero for next time
     }
   }
 }
