@@ -9,8 +9,8 @@
 template <std::size_t block_size>
 __global__ void std_reduction(
     std::size_t input_size,
-    int *global_result,
-    int *device_result,
+    int *final_result,
+    int *temp_accumulator,
     int *count)
 {
    auto tid = threadIdx.x + blockIdx.x * gridDim.x;
@@ -23,23 +23,23 @@ __global__ void std_reduction(
    using BlockReduce = cub::BlockReduce<int, block_size>;
    __shared__ typename BlockReduce::TempStorage temp_storage;
    int block_result = BlockReduce(temp_storage).Sum(thread_data);
-   bool is_last_block_done = false;
 
-   cuda::atomic_ref<int, cuda::thread_scope_device> device_result_ref{*device_result};
+   cuda::atomic_ref<int, cuda::thread_scope_device> temp_accumulator_ref{*temp_accumulator};
    cuda::atomic_ref<int, cuda::thread_scope_device> count_ref{*count};
    if (threadIdx.x == 0)
    {
-      device_result_ref.fetch_add(block_result, cuda::std::memory_order_relaxed);
-      unsigned value = count_ref.fetch_add(1, cuda::memory_order_release);
-      is_last_block_done = value == (gridDim.x - 1);
-      if (is_last_block_done)
+      temp_accumulator_ref.fetch_add(block_result, cuda::memory_order_relaxed);
+
+      // Use acq_rel to guarantee temp_accumulator_ref.fetch_add is not reordered after incrementing the count
+      // and ensure that other thread's updates to temp_accumulator_ref are visible
+      auto const is_last_block = (count_ref.fetch_add(1, cuda::memory_order_acq_rel) == (gridDim.x - 1));
+      if (is_last_block)
       {
-         // copy result to global buffer
-         cuda::atomic_ref<int, cuda::thread_scope_system> global_result_ref{*global_result};
-         global_result_ref.store(device_result_ref.load(cuda::std::memory_order_relaxed), cuda::std::memory_order_relaxed);
+         // Guaranteed that all other thread updates are visible
+         auto const final_sum = temp_accumulator_ref.load(cuda::memory_order_relaxed); 
+         cuda::atomic_ref<int, cuda::thread_scope_system>{*final_result}.store(final_sum, cuda::memory_order_relaxed);
          
-         
-         device_result_ref.store(0, cuda::std::memory_order_relaxed); // set to zero for next timek
+         temp_accumulator_ref.store(0, cuda::std::memory_order_relaxed); // set to zero for next timek
          count_ref.store(0, cuda::std::memory_order_relaxed);  // set to zero for next time
       }
    }
@@ -64,7 +64,7 @@ static void BM_std_pinned_memory(::benchmark::State &state)
       *hd_result = 0;
       std_reduction<block_size><<<block_size, grid_size>>>(size, hd_result, &storage[0], &storage[1]);
       cuda::atomic_ref<int, cuda::thread_scope_system> hd_result_ref{*hd_result};
-      while (hd_result_ref.load(cuda::memory_order_acquire) == 0);
+      while (hd_result_ref.load(cuda::memory_order_relaxed) == 0);
       benchmark::DoNotOptimize(h_result = *hd_result);
    }
 
